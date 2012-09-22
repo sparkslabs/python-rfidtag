@@ -1,0 +1,4 @@
+0.1	Transformed to use distutils for installation. Initial release.
+
+Initial version retrieved from 
+https://projects.nesl.ucla.edu/view/viewcvs.cgi/tikitag/trunk/pytiki/
