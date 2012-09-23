@@ -1,5 +1,5 @@
 //sudo /etc/init.d/pcscd stop
-//gcc -Wall -W -L/usr/lib/ -lusb tikitags.c -o tiki
+//gcc -Wall -W -L/usr/lib/ -lusb rfidtag.c -o rfidtag
 
 #include <usb.h>
 #include <stdio.h>
@@ -21,20 +21,20 @@ unsigned long long id1_int = -1;
 unsigned long long id2_int = -1;
 int readerID = -1;
 char count = 0;                         //insturction count, [6] of each header is the count. May not be necessary...
-int numoftiki = 0;                      //number of tikitag readers
+int numtagreaders = 0;                      //number of rfidtag readers
 int seektime = 0;		//in ms
 int looprate = 0;		//in ms max of 1000ms (1sec)
-struct usb_device* tikidev[10];
-struct usb_dev_handle* tiki[10];
+struct usb_device* rfid_devices[10];
+struct usb_dev_handle* rfid_dev[10];
 
  /*
-  ** tiki_xchange(udp, *outp, out_len, *inp, in_len)
+  ** rfidtag_xchange(udp, *outp, out_len, *inp, in_len)
   **      send a command to the reader and gets the answer
   **      returns 0 if all goes well; -1 if not
   **LOCKED IN
   */
 int
-tiki_xchange (struct usb_dev_handle *udp, char *outp, int out_len, char *inp,
+rfidtag_xchange (struct usb_dev_handle *udp, char *outp, int out_len, char *inp,
 	      int in_len)
 {
   int bytes_sent;
@@ -71,10 +71,10 @@ tiki_xchange (struct usb_dev_handle *udp, char *outp, int out_len, char *inp,
   */
 
 int
-tiki_setup (struct usb_dev_handle *udp)
+rfidtag_setup (struct usb_dev_handle *udp)
 {
   power_up[6] = count;
-  if (tiki_xchange
+  if (rfidtag_xchange
       (udp, power_up, sizeof (power_up), recvbuf, sizeof (recvbuf)) < 0)
     {
       perror ("xchange");
@@ -82,28 +82,28 @@ tiki_setup (struct usb_dev_handle *udp)
     }
 
   INIT1[6] = count;
-  if (tiki_xchange (udp, INIT1, sizeof (INIT1), recvbuf, sizeof (recvbuf)) <
+  if (rfidtag_xchange (udp, INIT1, sizeof (INIT1), recvbuf, sizeof (recvbuf)) <
       0)
     {
       perror ("xchange");
       return (-1);
     }
   INIT2[6] = count;
-  if (tiki_xchange (udp, INIT2, sizeof (INIT2), recvbuf, sizeof (recvbuf)) <
+  if (rfidtag_xchange (udp, INIT2, sizeof (INIT2), recvbuf, sizeof (recvbuf)) <
       0)
     {
       perror ("xchange");
       return (-1);
     }
   INIT3[6] = count;
-  if (tiki_xchange (udp, INIT3, sizeof (INIT3), recvbuf, sizeof (recvbuf)) <
+  if (rfidtag_xchange (udp, INIT3, sizeof (INIT3), recvbuf, sizeof (recvbuf)) <
       0)
     {
       perror ("xchange");
       return (-1);
     }
   INIT4[6] = count;
-  if (tiki_xchange (udp, INIT4, sizeof (INIT4), recvbuf, sizeof (recvbuf)) <
+  if (rfidtag_xchange (udp, INIT4, sizeof (INIT4), recvbuf, sizeof (recvbuf)) <
       0)
     {
       perror ("xchange");
@@ -113,19 +113,19 @@ tiki_setup (struct usb_dev_handle *udp)
 }
 
 unsigned long long
-tiki_getID1 ()
+rfidtag_getID1 ()
 {
   return id1_int;
 }
 
 unsigned long long
-tiki_getID2 ()
+rfidtag_getID2 ()
 {
   return id2_int;
 }
 
 int
-tiki_getReaderID ()
+rfidtag_getReaderID ()
 {
   return readerID;
 }
@@ -137,7 +137,7 @@ tiki_getReaderID ()
 **LOCKED IN
 */
 int
-tiki_init (void)
+rfidtag_init (void)
 {
   struct usb_bus *busses, *bus;
   struct usb_device *dev;
@@ -153,31 +153,39 @@ tiki_init (void)
     {
       for (dev = bus->devices; dev; dev = dev->next)
 	{
-	  if (dev->descriptor.idVendor == 0x072f &&	/* ACS */
-	      dev->descriptor.idProduct == 0x90cc)	/* ACR122 */
-	    {
-	      printf ("Found tikitag reader %d!\n", numoftiki);
-	      tikidev[numoftiki] = dev;
-	      numoftiki++;
-	    }
+	  if (dev->descriptor.idVendor == 0x072f) /* ACS */
+	  { 
+              if (dev->descriptor.idProduct == 0x90cc)	/* ACR122 */
+	      {
+	          printf ("Found tikitag reader %d!\n", numtagreaders);
+	          rfid_devices[numtagreaders] = dev;
+	          numtagreaders++;
+	      }
+              if (dev->descriptor.idProduct == 0x2200)	/* ACR122 */
+	      {
+	          printf ("Found touchatag reader %d!\n", numtagreaders);
+	          rfid_devices[numtagreaders] = dev;
+	          numtagreaders++;
+	      }
+          }
 	  //printf("works\n");
 	}
     }
-  if (numoftiki == 0)
+  if (numtagreaders == 0)
     {
-      printf ("Didn't Find tikitag reader...\n");
+      printf ("Didn't Find rfidtag reader...\n");
       exit (-1);
     }
-  for (i = 0; i < numoftiki; i++)
+  for (i = 0; i < numtagreaders; i++)
     {
 
-      if ((tiki[i] = usb_open (tikidev[i])) == NULL)
+      if ((rfid_dev[i] = usb_open (rfid_devices[i])) == NULL)
 	{
 	  perror ("usb_open");
 	  exit (-1);
 	}
        /*      
-      if(usb_claim_interface(tiki[i], 0)<0)
+      if(usb_claim_interface(rfid_dev[i], 0)<0)
        {
 	  perror("usb_claim_interface");
 	  exit(-1);
@@ -185,15 +193,15 @@ tiki_init (void)
        */
       //printf("Open[%d]!\n",i+1);
     }
-  for (i = 0; i < numoftiki; i++)
+  for (i = 0; i < numtagreaders; i++)
     {
-      if ((tiki_setup (tiki[i])) < 0)
+      if ((rfidtag_setup (rfid_dev[i])) < 0)
 	{
-	  perror ("tiki_init");
+	  perror ("rfidtag_init");
 	  exit(-1);
 	}
     }
-  return (numoftiki);
+  return (numtagreaders);
 }
 
  /*
@@ -203,7 +211,7 @@ tiki_init (void)
   **LOCKED IN
   */
 int
-tiki_decode (char *inp, int reader)
+rfidtag_decode (char *inp, int reader)
 {
   int numtags = inp[12];
   int idlen1 = inp[19];
@@ -252,12 +260,12 @@ tiki_decode (char *inp, int reader)
 
  /*
   **
-  **tiki_config config seektime and looprate
+  **rfidtag_config config seektime and looprate
   **
   **LOCKED IN
   */
 int
-tiki_config (int time, int rate)
+rfidtag_config (int time, int rate)
 {
   seektime = time;
 
@@ -270,24 +278,24 @@ tiki_config (int time, int rate)
 
  /*
   **
-  **tiki close - power down reader and close usb communication
+  **rfidtag close - power down reader and close usb communication
   **    
   **LOCKED IN
   */
 int
-tiki_close (void)
+rfidtag_close (void)
 {
   int i = 0;
-  for (i = 0; i < numoftiki; i++)
+  for (i = 0; i < numtagreaders; i++)
     {
-      if (tiki_xchange
-	  (tiki[i], power_down, sizeof (power_down), recvbuf,
+      if (rfidtag_xchange
+	  (rfid_dev[i], power_down, sizeof (power_down), recvbuf,
 	   sizeof (recvbuf)) < 0)
 	{
 	  perror ("xchange");
 	}
       //printf("closing[%d]\n\n", i+1);
-      if (usb_close (tiki[i]) < 0)
+      if (usb_close (rfid_dev[i]) < 0)
 	{
 	  perror ("usb_close");
 	  return (-1);
@@ -298,14 +306,14 @@ tiki_close (void)
 
  /*
   **
-  **tiki_seek - searches for time set in tiki_config (time) at the rate specfied in tiki_config (rate)
+  **rfidtag_seek - searches for time set in rfidtag_config (time) at the rate specfied in rfidtag_config (rate)
   **             rate is how often program checks for a tag, once tag is found store in global variable
   **             ID1 is two are found after a poll they are stored in ID1 and ID2
   **
   **LOCKED IN
   */
 int
-tiki_seek (void)
+rfidtag_seek (void)
 {				//seektime/(looprate+65ms)=iterations (65ms or 95ms is roughly time to run through one iteration)
   int t = 0;
   int i = 0;
@@ -314,12 +322,12 @@ tiki_seek (void)
   while (t < (seektime / (looprate + 95)))
     {
 
-      for (i = 0; i < numoftiki; i++)
+      for (i = 0; i < numtagreaders; i++)
 	{
           //printf("haha %d\n", count);
 	  poll1[6] = count;
 	  if ((recvb =
-	       tiki_xchange (tiki[i], poll1, sizeof (poll1), recvbuf,
+	       rfidtag_xchange (rfid_dev[i], poll1, sizeof (poll1), recvbuf,
 			     sizeof (recvbuf))) < 0)
 	    {
 	      perror ("xchange");
@@ -328,13 +336,13 @@ tiki_seek (void)
 	  get1[6] = count;
 	  get1[14] = recvbuf[11];
 	  if ((recvb =
-	       tiki_xchange (tiki[i], get1, sizeof (get1), recvbuf,
+	       rfidtag_xchange (rfid_dev[i], get1, sizeof (get1), recvbuf,
 			     sizeof (recvbuf))) < 0)
 	    {
 	      perror ("xchange");
 	    }
 	  //Add debug mode for Printing
-	  numtags = tiki_decode (recvbuf, i);
+	  numtags = rfidtag_decode (recvbuf, i);
 	  if (numtags > 0)	//check num of tags
 		  return numtags;		//return num of tags
 	}

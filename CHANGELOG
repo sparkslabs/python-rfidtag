@@ -1,4 +1,25 @@
-0.1	Transformed to use distutils for installation. Initial release.
+CHANGELOG
+
+0.2 - Michael Sparks <sparks.m@gmail.com> 23 Sept 2012
+
+    The codebase now supports touchtag readers as well as tikitag
+    readers. 
+
+    This forces two changes:
+
+       * The name needs to change to rfidtag rather than tiki (for hopefully
+         obvious reasons)
+       * The examples need to change to match this obviously. (the kamaelia one
+         has been simplified and made to work)
+       * The touchatag readers have a different USB ID, and so that needs 
+         including.
+
+0.1 - Michael Sparks <sparks.m@gmail.com> 23 Sept 2012
+
+    Transformed to use distutils for installation. Initial release.
+
+
+
 
 Initial version retrieved from 
 https://projects.nesl.ucla.edu/view/viewcvs.cgi/tikitag/trunk/pytiki/

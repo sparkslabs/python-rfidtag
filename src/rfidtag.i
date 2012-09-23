@@ -1,5 +1,5 @@
 /*
- *  pytiki
+ *  rfidtag
  *  Copyright (C) 2008 -
  *     Younghun Kim
  *
@@ -20,8 +20,8 @@
  *
  */
 
-/* tikitag.i*/
-%module pytiki
+/* rfidtag.i*/
+%module rfidtag
 %{
 extern char INIT1[15];
 extern char INIT2[15];
@@ -34,13 +34,13 @@ extern char abort_pipe[10];
 extern char poll[20];
 extern char get1[15];
 
-extern int tiki_init(void);
-extern int tiki_config(int time, int rate);
-extern int tiki_close(void);
-extern int tiki_seek(void);
-extern unsigned long long tiki_getID1();
-extern unsigned long long tiki_getID2();
-extern int tiki_getReaderID();
+extern int rfidtag_init(void);
+extern int rfidtag_config(int time, int rate);
+extern int rfidtag_close(void);
+extern int rfidtag_seek(void);
+extern unsigned long long rfidtag_getID1();
+extern unsigned long long rfidtag_getID2();
+extern int rfidtag_getReaderID();
 %}
 extern char INIT1[15];
 extern char INIT2[15];
@@ -54,11 +54,11 @@ extern char poll[20];
 extern char get1[15];
 
 
-extern int tiki_init(void);
-extern int tiki_config(int time, int rate);
-extern int tiki_close(void);
-extern int tiki_seek(void);
-extern unsigned long long tiki_getID1();
-extern unsigned long long tiki_getID2();
-extern int tiki_getReaderID();
+extern int rfidtag_init(void);
+extern int rfidtag_config(int time, int rate);
+extern int rfidtag_close(void);
+extern int rfidtag_seek(void);
+extern unsigned long long rfidtag_getID1();
+extern unsigned long long rfidtag_getID2();
+extern int rfidtag_getReaderID();
 

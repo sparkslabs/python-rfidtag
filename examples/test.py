@@ -1,19 +1,21 @@
-import pytiki as ti
-ti.tiki_init()
-ti.tiki_config(5000,0)
+#!/usr/bin/python
 
-#for i in range(100):
+from rfidtag import *
+
+rfidtag_init()
+rfidtag_config(5000,0)
+
 while True:
-	num = ti.tiki_seek()
-	if num == 0:
-		print "No tag found"
-	elif num == 1:
-        	print "%x"%ti.tiki_getID1()
-	elif num == 2:
-		print "%x"%ti.tiki_getID1()
-		print 
-		print "%x"%ti.tiki_getID2()
-	else:
-		print "Nope"
+    num = rfidtag_seek()
+    if num == 0:
+        print "No tag found"
+    elif num == 1:
+        print "Tag: ", rfidtag_getID1()
+    elif num == 2:
+        print "Tag 1/2", rfidtag_getID1()
+        print 
+        print "Tag 2/2", rfidtag_getID2()
+    else:
+        print "Nope", num
 
-ti.tiki_close()
+rfidtag_close()

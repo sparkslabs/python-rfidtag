@@ -1,7 +1,11 @@
-import pytiki as ti
-ti.tiki_init()
-ti.tiki_config(5000,0)
-num = ti.tiki_seek()
+#!/usr/bin/python
+
+from rfidtag import *
+
+rfidtag_init()
+rfidtag_config(5000,0)
+num = rfidtag_seek()
 if num == 1:
-        print ti.tiki_getID1()
-ti.tiki_close()
+    print rfidtag_getID1()
+
+rfidtag_close()
