@@ -18,7 +18,7 @@ rfidtag_module = Extension('_rfidtag',
 # Michael Sparks
 
 setup (name = 'rfidtag',
-       version = '0.2',
+       version = '0.2.1',
        author      = "Younghun Kim, Thomas Schmid, Aaron Dunn",
        author_email = "thomas.schmid@gmail.com",
        maintainer = "Michael Sparks",
