@@ -3,6 +3,7 @@ include CHANGELOG
 include COPYING
 include README
 include MANIFEST.in
-setup.py
+include setup.py
 recursive-include src *.py *.pyx *.pxd *.c *.i *.h
 recursive-include examples *.py
+include stdeb.cfg
