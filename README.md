@@ -60,3 +60,9 @@ Who am I?
       before I release it and as per GPL I'm marking my changes including
       license file etc)
 
+-----
+
+August 2023
+
+* Updated the code with minor changes to support (only) Python 3
+

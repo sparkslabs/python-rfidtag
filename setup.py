@@ -18,10 +18,10 @@ rfidtag_module = Extension('_rfidtag',
 # Michael Sparks
 
 setup (name = 'rfidtag',
-       version = '0.2.1',
+       version = '0.3.8',
        author      = "Younghun Kim, Thomas Schmid, Aaron Dunn",
        author_email = "thomas.schmid@gmail.com",
-       maintainer = "Michael Sparks",
+       maintainer = "Michael Sparks (sparkslabs)",
        maintainer_email = "sparks.m@gmail.com",
        license = "GPL V2",
        description = """rfidtag - access to tikitag and touchatag tags from python""",

@@ -1,7 +1,7 @@
 PYTHON=`which python`
 DESTDIR=/
 PROJECT=rfidtag
-VERSION=0.2.1
+VERSION=0.3.8
 all:
 	@echo "make source - Create source package"
 	@echo "make install - Install on local system (only during development)"
@@ -26,13 +26,13 @@ deb:
 
 ppadeb:
 	python setup.py sdist
-	cd dist && py2dsc $(PROJECT)-* && cd deb_dist/$(PROJECT)-$(VERSION) && debuild -S dput ppa:sparkslabs/packages $(PROJECT)_*_source.changes       
+	cd dist && py2dsc $(PROJECT)-* && cd deb_dist/$(PROJECT)-$(VERSION) && debuild -S && cd .. && dput ppa:sparkslabs/packages $(PROJECT)_*_source.changes
 
 use:
-	sudo dpkg -i dist/deb_dist/python-$(PROJECT)*deb
+	sudo dpkg -i dist/deb_dist/python3-$(PROJECT)*deb
 
 purge:
-	sudo apt-get purge python-$(PROJECT)
+	sudo apt-get purge python3-$(PROJECT)
 
 clean:
 	$(PYTHON) setup.py clean
