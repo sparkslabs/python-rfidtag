@@ -13,9 +13,9 @@ class RFIDTagReader(Axon.ThreadedComponent.threadedcomponent):
             while True:
                 num = rfidtag_seek()
                 if num == 1:
-                    self.send( (time.time(), [ rfidtag_getID1() ] , self.name), "outbox")
+                    self.send( (time.time(), [ hex( rfidtag_getID1() ) ] , self.name), "outbox")
                 elif num == 2:
-                    self.send( (time.time(), [ rfidtag_getID1(), rfidtag_getID2() ] , self.name), "outbox")
+                    self.send( (time.time(), [ hex( rfidtag_getID1() ) , hex( rfidtag_getID2() ) ] , self.name), "outbox")
                 time.sleep(0.01)
 
         finally:
